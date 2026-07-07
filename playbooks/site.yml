@@ -1,0 +1,10 @@
+---
+- name: Configure worker nodes
+  hosts: workers
+  become: true
+
+  roles:
+    - base
+
+
+    
