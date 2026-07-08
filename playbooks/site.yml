@@ -6,6 +6,8 @@
   roles:
     - base
     - k3s
+    - helm
+    - prefect
 
 
     

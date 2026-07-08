@@ -1,0 +1,33 @@
+---
+- name: Add Prefect Helm repository
+  ansible.builtin.command:
+    cmd: helm repo add prefect https://prefecthq.github.io/prefect-helm
+  register: prefect_helm_repo
+  changed_when: "'has been added' in prefect_helm_repo.stdout"
+  failed_when:
+    - prefect_helm_repo.rc != 0
+    - "'already exists' not in prefect_helm_repo.stderr"
+
+- name: Update Helm repositories
+  ansible.builtin.command:
+    cmd: helm repo update
+  changed_when: false
+
+- name: Create Prefect namespace
+  ansible.builtin.command:
+    cmd: kubectl create namespace prefect
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: prefect_namespace
+  changed_when: "'created' in prefect_namespace.stdout"
+  failed_when:
+    - prefect_namespace.rc != 0
+    - "'AlreadyExists' not in prefect_namespace.stderr"
+
+- name: Install Prefect server
+  ansible.builtin.command:
+    cmd: helm upgrade --install prefect-server prefect/prefect-server --namespace prefect
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: prefect_server_install
+  changed_when: "'has been upgraded' in prefect_server_install.stdout or 'has been installed' in prefect_server_install.stdout"
