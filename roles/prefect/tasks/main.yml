@@ -31,3 +31,17 @@
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   register: prefect_server_install
   changed_when: "'has been upgraded' in prefect_server_install.stdout or 'has been installed' in prefect_server_install.stdout"
+
+- name: Install Prefect Kubernetes worker
+  ansible.builtin.command:
+    cmd: >
+      helm upgrade --install prefect-worker prefect/prefect-worker
+      --namespace prefect
+      --set worker.apiConfig=selfHostedServer
+      --set worker.config.workPool=data-platform
+      --set worker.config.type=kubernetes
+      --set worker.selfHostedServerApiConfig.apiUrl=http://prefect-server.prefect.svc.cluster.local:4200/api
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: prefect_worker_install
+  changed_when: "'has been upgraded' in prefect_worker_install.stdout or 'has been installed' in prefect_worker_install.stdout"
