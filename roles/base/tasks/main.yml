@@ -9,14 +9,7 @@
 
 - name: Install base packages
   ansible.builtin.apt:
-    name:
-      - curl
-      - git
-      - htop
-      - vim
-      - ufw
-      - ca-certificates
-      - gnupg
+    name: "{{ base_packages }}"
     state: present
 
 - name: Ensure SSH service is running

@@ -1,0 +1,17 @@
+---
+- name: Download K3s install script
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /tmp/install-k3s.sh
+    mode: "0755"
+
+- name: Install K3s without Traefik
+  ansible.builtin.command:
+    cmd: /tmp/install-k3s.sh --disable traefik
+    creates: /usr/local/bin/k3s
+
+- name: Ensure K3s service is running
+  ansible.builtin.service:
+    name: k3s
+    state: started
+    enabled: true
